@@ -10,13 +10,15 @@ To use MongoDB.Web, add the providers you're interested in to your Web.config fi
         <caching>
             <outputCache defaultProvider="MongoDBOutputCache">
                 <providers>
-                    <add name="MongoDBOutputCache" type="MongoDB.Web.Providers.MongoDBOutputCacheProvider" connectionString="mongodb://localhost" database="ASPNETDB" collection="OutputCache" />
+                    <add name="MongoDBOutputCache" type="MongoDB.Web.Providers.MongoDBOutputCacheProvider"
+                        connectionString="mongodb://localhost" database="ASPNETDB" collection="OutputCache" />
                 </providers>
             </outputCache>
         </caching>
         <healthMonitoring enabled="true">
             <providers>
-                <add name="MongoDBWebEventProvider" bufferMode="Notification" type="MongoDB.Web.Providers.MongoDBWebEventProvider" connectionString="mongodb://localhost" database="ASPNETDB" collection="WebEvents" />
+                <add name="MongoDBWebEventProvider" type="MongoDB.Web.Providers.MongoDBWebEventProvider" bufferMode="Notification"
+                    connectionString="mongodb://localhost" database="ASPNETDB" collection="WebEvents" />
             </providers>
             <rules>
                 <add name="LogAllEvents" eventName="All Events" provider="MongoDBWebEventProvider" />
@@ -25,8 +27,9 @@ To use MongoDB.Web, add the providers you're interested in to your Web.config fi
         <membership defaultProvider="MongoDBMembershipProvider">
             <providers>
                 <clear />
-                <add name="MongoDBMembershipProvider" type="MongoDB.Web.Providers.MongoDBMembershipProvider"
-                    applicationName="/" enablePasswordRetrieval="false" enablePasswordReset="true" requiresQuestionAndAnswer="false" requiresUniqueEmail="false"
+                <add name="MongoDBMembershipProvider" type="MongoDB.Web.Providers.MongoDBMembershipProvider" applicationName="/"
+                    connectionString="mongodb://localhost" database="ASPNETDB" collection="Users"
+                    enablePasswordRetrieval="false" enablePasswordReset="true" requiresQuestionAndAnswer="false" requiresUniqueEmail="false"
                     maxInvalidPasswordAttempts="5" minRequiredPasswordLength="6" minRequiredNonalphanumericCharacters="0" passwordAttemptWindow="10" />
             </providers>
         </membership>
@@ -38,18 +41,21 @@ To use MongoDB.Web, add the providers you're interested in to your Web.config fi
             </properties>
             <providers>
                 <clear/>
-                <add name="MongoDBProfileProvider" type="MongoDB.Web.Providers.MongoDBProfileProvider" applicationName="/" />
+                <add name="MongoDBProfileProvider" type="MongoDB.Web.Providers.MongoDBProfileProvider" applicationName="/"
+                    connectionString="mongodb://localhost" database="ASPNETDB" collection="Profiles" />
             </providers>
         </profile>
         <roleManager enabled="false">
             <providers>
                 <clear/>
-                <add name="MongoDBRoleProvider" type="MongoDB.Web.Providers.MongoDBRoleProvider" applicationName="/" />
+                <add name="MongoDBRoleProvider" type="MongoDB.Web.Providers.MongoDBRoleProvider" applicationName="/"
+                    connectionString="mongodb://localhost" database="ASPNETDB" collection="Roles" />
             </providers>
         </roleManager>
         <sessionState mode="Custom" customProvider="MongoDBSessionStateProvider">
             <providers>
-                <add name="MongoDBSessionStateProvider" type="MongoDB.Web.Providers.MongoDBSessionStateStore" connectionString="mongodb://localhost" database="ASPNETDB" collection="ASPState" />
+                <add name="MongoDBSessionStateProvider" type="MongoDB.Web.Providers.MongoDBSessionStateStore"
+                    connectionString="mongodb://localhost" database="ASPNETDB" collection="ASPState" />
             </providers>
         </sessionState>
     </system.web>

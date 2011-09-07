@@ -297,7 +297,7 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if (userIsOnline)
+            if (userIsOnline == true)
             {
                 var update = Update.Set("LastActivityDate", DateTime.UtcNow);
                 this.mongoCollection.Update(query, update);
@@ -316,7 +316,7 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if (userIsOnline)
+            if (userIsOnline == true)
             {
                 var update = Update.Set("LastActivityDate", DateTime.UtcNow);
                 this.mongoCollection.Update(query, update);
