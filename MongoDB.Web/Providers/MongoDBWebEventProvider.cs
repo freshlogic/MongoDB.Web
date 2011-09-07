@@ -8,7 +8,7 @@ namespace MongoDB.Web.Providers
 {
     public class MongoDBWebEventProvider : BufferedWebEventProvider
     {
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private readonly IMongoConnectionProvider provider;
 
         public MongoDBWebEventProvider() : this(new MongoConnectionProvider()) { }

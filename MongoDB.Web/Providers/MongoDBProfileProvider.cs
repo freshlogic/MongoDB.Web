@@ -14,7 +14,7 @@ namespace MongoDB.Web.Providers
 {
     public class MongoDBProfileProvider : ProfileProvider
     {
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private readonly IMongoConnectionProvider provider;
 
         public MongoDBProfileProvider() : this(new MongoConnectionProvider()) { }

@@ -14,7 +14,7 @@ namespace MongoDB.Web.Providers
 {
     public class MongoDBSessionStateProvider : SessionStateStoreProviderBase
     {
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private SessionStateSection sessionStateSection;
         private readonly IMongoConnectionProvider provider;
 

@@ -11,7 +11,7 @@ namespace MongoDB.Web.Providers
 {
     public class MongoDBOutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private readonly IMongoConnectionProvider provider;
 
         public MongoDBOutputCacheProvider() : this(new MongoConnectionProvider()) { }

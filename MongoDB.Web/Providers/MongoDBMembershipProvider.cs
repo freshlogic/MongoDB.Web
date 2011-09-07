@@ -19,7 +19,7 @@ namespace MongoDB.Web.Providers
         private int maxInvalidPasswordAttempts;
         private int minRequiredNonAlphanumericCharacters;
         private int minRequiredPasswordLength;
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private int passwordAttemptWindow;
         private MembershipPasswordFormat passwordFormat;
         private string passwordStrengthRegularExpression;
@@ -297,8 +297,11 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            var update = Update.Set("LastActivityDate", DateTime.UtcNow);
-            this.mongoCollection.Update(query, update);
+            if (userIsOnline)
+            {
+                var update = Update.Set("LastActivityDate", DateTime.UtcNow);
+                this.mongoCollection.Update(query, update);
+            }
 
             return ToMembershipUser(bsonDocument);
         }
@@ -313,8 +316,11 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            var update = Update.Set("LastActivityDate", DateTime.UtcNow);
-            this.mongoCollection.Update(query, update);
+            if (userIsOnline)
+            {
+                var update = Update.Set("LastActivityDate", DateTime.UtcNow);
+                this.mongoCollection.Update(query, update);
+            }
 
             return ToMembershipUser(bsonDocument);
         }
@@ -330,7 +336,7 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
             this.enablePasswordReset = Boolean.Parse(config["enablePasswordReset"] ?? "true");
-            this.enablePasswordRetrieval = Boolean.Parse(config["enablePasswordRetrieval"] ?? "true");
+            this.enablePasswordRetrieval = Boolean.Parse(config["enablePasswordRetrieval"] ?? "false");
             this.maxInvalidPasswordAttempts = Int32.Parse(config["maxInvalidPasswordAttempts"] ?? "5");
             this.minRequiredNonAlphanumericCharacters = Int32.Parse(config["minRequiredNonAlphanumericCharacters"] ?? "1");
             this.minRequiredPasswordLength = Int32.Parse(config["minRequiredPasswordLength"] ?? "7");

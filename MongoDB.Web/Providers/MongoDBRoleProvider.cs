@@ -13,8 +13,8 @@ namespace MongoDB.Web.Providers
 {
     public class MongoDBRoleProvider : RoleProvider
     {
-        private MongoCollection rolesMongoCollection;
-        private MongoCollection usersInRolesMongoCollection;
+        private IMongoCollection rolesMongoCollection;
+        private IMongoCollection usersInRolesMongoCollection;
         private readonly IMongoConnectionProvider provider;
 
         public MongoDBRoleProvider() : this(new MongoConnectionProvider()) { }
