@@ -5,12 +5,21 @@ using System.Runtime.Serialization.Formatters.Binary;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Web.Internal;
 
 namespace MongoDB.Web.Providers
 {
     public class MongoDBOutputCacheProvider : System.Web.Caching.OutputCacheProvider
     {
         private MongoCollection mongoCollection;
+        private readonly IMongoConnectionProvider provider;
+
+        public MongoDBOutputCacheProvider() : this(new MongoConnectionProvider()) { }
+
+        public MongoDBOutputCacheProvider(IMongoConnectionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         public override object Add(string key, object entry, DateTime utcExpiry)
         {
@@ -41,7 +50,10 @@ namespace MongoDB.Web.Providers
 
         public override void Initialize(string name, NameValueCollection config)
         {
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "OutputCache");
+            this.mongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["collection"] ?? "OutputCache");
             this.mongoCollection.EnsureIndex("Key");
             base.Initialize(name, config);
         }

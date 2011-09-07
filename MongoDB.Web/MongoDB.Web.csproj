@@ -34,6 +34,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Internal\IMongoConnectionProvider.cs" />
+    <Compile Include="Internal\MongoConnectionProvider.cs" />
     <Compile Include="Providers\MongoDBOutputCacheProvider.cs" />
     <Compile Include="Providers\WebEvent.cs" />
     <Compile Include="Providers\MongoDBWebEventProvider.cs" />

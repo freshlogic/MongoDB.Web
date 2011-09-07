@@ -8,6 +8,7 @@ using System.Web.SessionState;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Web.Internal;
 
 namespace MongoDB.Web.Providers
 {
@@ -15,6 +16,14 @@ namespace MongoDB.Web.Providers
     {
         private MongoCollection mongoCollection;
         private SessionStateSection sessionStateSection;
+        private readonly IMongoConnectionProvider provider;
+
+        public MongoDBSessionStateProvider() : this(new MongoConnectionProvider()) { }
+
+        public MongoDBSessionStateProvider(IMongoConnectionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         public override SessionStateStoreData CreateNewStoreData(HttpContext context, int timeout)
         {
@@ -49,7 +58,10 @@ namespace MongoDB.Web.Providers
             var configuration = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
             this.sessionStateSection = configuration.GetSection("system.web/sessionState") as SessionStateSection;
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "SessionState");
+            this.mongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["collection"] ?? "SessionState");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id", "lockId");
 
