@@ -321,7 +321,7 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
             this.enablePasswordReset = Boolean.Parse(config["enablePasswordReset"] ?? "true");
-            this.enablePasswordRetrieval = Boolean.Parse(config["enablePasswordRetrieval"] ?? "true");
+            this.enablePasswordRetrieval = Boolean.Parse(config["enablePasswordRetrieval"] ?? "false");
             this.maxInvalidPasswordAttempts = Int32.Parse(config["maxInvalidPasswordAttempts"] ?? "5");
             this.minRequiredNonAlphanumericCharacters = Int32.Parse(config["minRequiredNonAlphanumericCharacters"] ?? "1");
             this.minRequiredPasswordLength = Int32.Parse(config["minRequiredPasswordLength"] ?? "7");
