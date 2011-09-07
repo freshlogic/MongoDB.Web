@@ -288,8 +288,11 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            var update = Update.Set("LastActivityDate", DateTime.UtcNow);
-            this.mongoCollection.Update(query, update);
+            if (userIsOnline == true)
+            {
+                var update = Update.Set("LastActivityDate", DateTime.UtcNow);
+                this.mongoCollection.Update(query, update);
+            }
 
             return ToMembershipUser(bsonDocument);
         }
@@ -304,8 +307,11 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            var update = Update.Set("LastActivityDate", DateTime.UtcNow);
-            this.mongoCollection.Update(query, update);
+            if (userIsOnline == true)
+            {
+                var update = Update.Set("LastActivityDate", DateTime.UtcNow);
+                this.mongoCollection.Update(query, update);
+            }
 
             return ToMembershipUser(bsonDocument);
         }
