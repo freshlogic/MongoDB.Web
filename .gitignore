@@ -1,0 +1,4 @@
+
+*.suo
+/MongoDB.Web/obj
+/MongoDB.Web/bin
