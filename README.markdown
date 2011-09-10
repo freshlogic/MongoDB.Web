@@ -54,7 +54,7 @@ To use MongoDB.Web, add the providers you're interested in to your Web.config fi
         </roleManager>
         <sessionState mode="Custom" customProvider="MongoDBSessionStateProvider">
             <providers>
-                <add name="MongoDBSessionStateProvider" type="MongoDB.Web.Providers.MongoDBSessionStateStore"
+                <add name="MongoDBSessionStateProvider" type="MongoDB.Web.Providers.MongoDBSessionStateProvider"
                     connectionString="mongodb://localhost" database="ASPNETDB" collection="ASPState" />
             </providers>
         </sessionState>
