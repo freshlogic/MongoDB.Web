@@ -5,6 +5,9 @@ NuGet Package: http://nuget.org/List/Packages/MongoDB.Web
 
 ## Configuration
 To use MongoDB.Web, add the providers you're interested in to your Web.config file:
+    <appSettings>
+        <add key="MONGOHQ_URL" value="mongodb://localhost/ASPNETDB"/>    
+    </appSettings>
 
     <system.web>
         <caching>
@@ -28,7 +31,7 @@ To use MongoDB.Web, add the providers you're interested in to your Web.config fi
             <providers>
                 <clear />
                 <add name="MongoDBMembershipProvider" type="MongoDB.Web.Providers.MongoDBMembershipProvider" applicationName="/"
-                    connectionString="mongodb://localhost" database="ASPNETDB" collection="Users"
+                    appSettingsConnectionStringKey="MONGOHQ_URL" collection="Users"
                     enablePasswordRetrieval="false" enablePasswordReset="true" requiresQuestionAndAnswer="false" requiresUniqueEmail="false"
                     maxInvalidPasswordAttempts="5" minRequiredPasswordLength="6" minRequiredNonalphanumericCharacters="0" passwordAttemptWindow="10" />
             </providers>
