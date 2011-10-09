@@ -5,10 +5,11 @@ NuGet Package: http://nuget.org/List/Packages/MongoDB.Web
 
 ## Configuration
 To use MongoDB.Web, add the providers you're interested in to your Web.config file:
+
     <appSettings>
         <add key="MONGOHQ_URL" value="mongodb://localhost/ASPNETDB"/>    
     </appSettings>
-
+    
     <system.web>
         <caching>
             <outputCache defaultProvider="MongoDBOutputCache">
