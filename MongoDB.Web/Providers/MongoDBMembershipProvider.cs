@@ -214,7 +214,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.Matches("Email", emailToMatch));
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -229,7 +229,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.Matches("Username", usernameToMatch));
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -244,7 +244,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.EQ("ApplicationName", this.ApplicationName);
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -257,7 +257,7 @@ namespace MongoDB.Web.Providers
         public override int GetNumberOfUsersOnline()
         {
             var timeSpan = TimeSpan.FromMinutes(Membership.UserIsOnlineTimeWindow);
-            return this.mongoCollection.Count(Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.GT("LastActivityDate", DateTime.UtcNow.Subtract(timeSpan))));
+            return (int)this.mongoCollection.Count(Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.GT("LastActivityDate", DateTime.UtcNow.Subtract(timeSpan))));
         }
 
         public override string GetPassword(string username, string answer)
@@ -342,7 +342,7 @@ namespace MongoDB.Web.Providers
                 throw new ProviderException("Configured settings are invalid: Hashed passwords cannot be retrieved. Either set the password format to different type, or set enablePasswordRetrieval to false.");
             }
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Users");
+            this.mongoCollection = MongoDatabase.Create(ConnectionHelper.GetDatabaseConnectionString(config)).GetCollection(config["collection"] ?? "Users");
             this.mongoCollection.EnsureIndex("ApplicationName");
             this.mongoCollection.EnsureIndex("ApplicationName", "Email");
             this.mongoCollection.EnsureIndex("ApplicationName", "Username");
