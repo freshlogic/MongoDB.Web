@@ -24,9 +24,9 @@ namespace MongoDB.Web.Internal
                 this.collection = collection;
             }
 
-            public int Count(IMongoQuery query)
+            public long Count(IMongoQuery query)
             {
-                return collection.Count(query);
+                return this.collection.Count(query);
             }
 
             public void EnsureIndex(params string[] keyNames)

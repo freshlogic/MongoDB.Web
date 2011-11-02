@@ -30,7 +30,7 @@ namespace MongoDB.Web.Tests.MongoDBMembershipProviderTests
 
             var membershipProvider = new MongoDBMembershipProvider(provider.Object);
             var nvc = new NameValueCollection();
-            membershipProvider.Initialize("Fake", nvc);
+            MembershipUtilities.SetDefaultMembershipProvider(membershipProvider, nvc);
 
             // It should not modify the configuration options
             CollectionAssert.AreEquivalent(new object[0], nvc);
@@ -56,7 +56,7 @@ namespace MongoDB.Web.Tests.MongoDBMembershipProviderTests
                               {"passwordFormat", "Hashed"},
                           };
             try {
-                membershipProvider.Initialize("Fake", nvc);
+                MembershipUtilities.SetDefaultMembershipProvider(membershipProvider, nvc);
                 Assert.Fail("Did not throw the expected exception.");
             } catch (ProviderException exception) {
                 Assert.AreEqual("Configured settings are invalid: Hashed passwords cannot be retrieved. Either set the password format to different type, or set enablePasswordRetrieval to false.", exception.Message);
@@ -77,7 +77,7 @@ namespace MongoDB.Web.Tests.MongoDBMembershipProviderTests
                               {"database", "TESTDB"},
                               {"collection", "MyUsers"}
                           };
-            membershipProvider.Initialize("Fake", nvc);
+            MembershipUtilities.SetDefaultMembershipProvider(membershipProvider, nvc);
 
             provider.Verify(m => m.GetCollection("mongodb://alternate/?slaveOk=true", "TESTDB", "MyUsers"), Times.Once());
         }

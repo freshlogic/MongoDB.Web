@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Configuration.Provider;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Web.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -25,7 +29,7 @@ namespace MongoDB.Web.Tests.MongoDBMembershipProviderTests
             collection.Setup(c => c.EnsureIndex(It.IsAny<string[]>()));
 
             var membershipProvider = new MongoDBMembershipProvider(provider.Object);
-            membershipProvider.Initialize("Fake", new NameValueCollection());
+            MembershipUtilities.SetDefaultMembershipProvider(membershipProvider);
 
             string query = null;
 
@@ -80,7 +84,7 @@ namespace MongoDB.Web.Tests.MongoDBMembershipProviderTests
             collection.Setup(c => c.EnsureIndex(It.IsAny<string[]>()));
 
             var membershipProvider = new MongoDBMembershipProvider(provider.Object);
-            membershipProvider.Initialize("Fake", new NameValueCollection());
+            MembershipUtilities.SetDefaultMembershipProvider(membershipProvider);
 
             BsonDocument query = null;
             BsonDocument update = null;

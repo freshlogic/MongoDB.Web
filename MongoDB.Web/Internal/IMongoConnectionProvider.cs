@@ -14,7 +14,7 @@ namespace MongoDB.Web.Internal
     public interface IMongoCollection
     {
         void EnsureIndex(params string[] keyNames);
-        int Count(IMongoQuery query);
+        long Count(IMongoQuery query);
         MongoCursor<T> FindAs<T>(IMongoQuery query);
         T FindOneAs<T>(IMongoQuery query);
         void Insert<T>(T document);
