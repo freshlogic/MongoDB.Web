@@ -35,13 +35,13 @@ namespace MongoDB.Web.Providers
                 query = Query.And(query, Query.EQ("IsAnonymous", authenticationOption == ProfileAuthenticationOption.Anonymous));
             }
 
-            return this.mongoCollection.Remove(query).DocumentsAffected;
+            return (int)this.mongoCollection.Remove(query).DocumentsAffected;
         }
 
         public override int DeleteProfiles(string[] usernames)
         {
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.In("Username", new BsonArray(usernames)));
-            return this.mongoCollection.Remove(query).DocumentsAffected;
+            return ( int )this.mongoCollection.Remove( query ).DocumentsAffected;
         }
 
         public override int DeleteProfiles(ProfileInfoCollection profiles)
@@ -72,13 +72,13 @@ namespace MongoDB.Web.Providers
         public override int GetNumberOfInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate)
         {
             var query = GetQuery(authenticationOption, null, userInactiveSinceDate);
-            return this.mongoCollection.Count(query);
+            return ( int )this.mongoCollection.Count( query );
         }
 
         public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
         {
             var settingsPropertyValueCollection = new SettingsPropertyValueCollection();
-            
+
             if (context == null || collection == null || collection.Count < 1)
             {
                 return settingsPropertyValueCollection;
@@ -153,7 +153,7 @@ namespace MongoDB.Web.Providers
                 {
                     continue;
                 }
-                
+
                 if (!isAuthenticated && !(bool)settingsPropertyValue.Property.Attributes["AllowAnonymous"])
                 {
                     continue;
@@ -192,7 +192,7 @@ namespace MongoDB.Web.Providers
         {
             var query = GetQuery(authenticationOption, usernameToMatch, userInactiveSinceDate);
 
-            totalRecords = this.mongoCollection.Count(query);
+            totalRecords = ( int )this.mongoCollection.Count( query );
 
             var profileInfoCollection = new ProfileInfoCollection();
 
@@ -207,7 +207,7 @@ namespace MongoDB.Web.Providers
         private IMongoQuery GetQuery(ProfileAuthenticationOption authenticationOption, string usernameToMatch, DateTime? userInactiveSinceDate)
         {
             var query = Query.EQ("ApplicationName", this.ApplicationName);
-            
+
             if (authenticationOption != ProfileAuthenticationOption.All)
             {
                 query = Query.And(query, Query.EQ("IsAnonymous", authenticationOption == ProfileAuthenticationOption.Anonymous));

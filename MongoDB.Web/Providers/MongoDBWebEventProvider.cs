@@ -24,6 +24,11 @@ namespace MongoDB.Web.Providers
                 connectionString: config["connectionString"] ?? "mongodb://localhost",
                 database: config["database"] ?? "ASPNETDB",
                 collection: config["collection"] ?? "WebEvent"); 
+
+            config.Remove("collection");
+            config.Remove("connectionString");
+            config.Remove("database");
+
             base.Initialize(name, config);
         }
 

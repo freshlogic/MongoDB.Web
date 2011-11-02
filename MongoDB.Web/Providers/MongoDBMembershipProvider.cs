@@ -138,7 +138,7 @@ namespace MongoDB.Web.Providers
             {
                 providerUserKey = Guid.NewGuid();
             }
-            
+
             var validatePasswordEventArgs = new ValidatePasswordEventArgs(username, password, true);
             OnValidatingPassword(validatePasswordEventArgs);
 
@@ -147,7 +147,7 @@ namespace MongoDB.Web.Providers
                 status = MembershipCreateStatus.InvalidPassword;
                 return null;
             }
-            
+
             if (this.RequiresQuestionAndAnswer && !String.IsNullOrWhiteSpace(passwordQuestion))
             {
                 status = MembershipCreateStatus.InvalidQuestion;
@@ -223,7 +223,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.Matches("Email", emailToMatch));
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -238,7 +238,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.Matches("Username", usernameToMatch));
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -253,7 +253,7 @@ namespace MongoDB.Web.Providers
             var membershipUsers = new MembershipUserCollection();
 
             var query = Query.EQ("ApplicationName", this.ApplicationName);
-            totalRecords = this.mongoCollection.FindAs<BsonDocument>(query).Count();
+            totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
@@ -266,7 +266,7 @@ namespace MongoDB.Web.Providers
         public override int GetNumberOfUsersOnline()
         {
             var timeSpan = TimeSpan.FromMinutes(Membership.UserIsOnlineTimeWindow);
-            return this.mongoCollection.Count(Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.GT("LastActivityDate", DateTime.UtcNow.Subtract(timeSpan))));
+            return (int)this.mongoCollection.Count(Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.GT("LastActivityDate", DateTime.UtcNow.Subtract(timeSpan))));
         }
 
         public override string GetPassword(string username, string answer)
@@ -471,7 +471,7 @@ namespace MongoDB.Web.Providers
             {
                 return Convert.ToBase64String(HashAlgorithm.Create("SHA1").ComputeHash(allBytes));
             }
-            
+
             return Convert.ToBase64String(EncryptPassword(allBytes));
         }
 
@@ -485,7 +485,7 @@ namespace MongoDB.Web.Providers
             var comment = bsonDocument.Contains("Comment") ? bsonDocument["Comment"].AsString : null;
             var email = bsonDocument.Contains("Email") ? bsonDocument["Email"].AsString : null;
             var passwordQuestion = bsonDocument.Contains("PasswordQuestion") ? bsonDocument["PasswordQuestion"].AsString : null;
-            
+
             return new MembershipUser(this.Name, bsonDocument["Username"].AsString, bsonDocument["_id"].AsGuid, email, passwordQuestion, comment, bsonDocument["IsApproved"].AsBoolean, bsonDocument["IsLockedOut"].AsBoolean, bsonDocument["CreationDate"].AsDateTime, bsonDocument["LastLoginDate"].AsDateTime, bsonDocument["LastActivityDate"].AsDateTime, bsonDocument["LastPasswordChangedDate"].AsDateTime, bsonDocument["LastLockoutDate"].AsDateTime);
         }
 
