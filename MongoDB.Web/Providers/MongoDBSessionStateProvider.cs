@@ -49,7 +49,7 @@ namespace MongoDB.Web.Providers
             var configuration = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
             this.sessionStateSection = configuration.GetSection("system.web/sessionState") as SessionStateSection;
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "SessionState");
+            this.mongoCollection = ConnectionUtils.GetCollection(config, "SessionState");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id", "lockId");
 

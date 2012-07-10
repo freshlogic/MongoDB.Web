@@ -41,7 +41,7 @@ namespace MongoDB.Web.Providers
 
         public override void Initialize(string name, NameValueCollection config)
         {
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "OutputCache");
+            this.mongoCollection = ConnectionUtils.GetCollection(config, "OutputCache");
             this.mongoCollection.EnsureIndex("Key");
             base.Initialize(name, config);
         }
