@@ -62,5 +62,4 @@ namespace MongoDB.Web.Providers
             return connectionString ?? "mongodb://localhost";
         }
     }
-    }
 }
