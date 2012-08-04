@@ -388,14 +388,10 @@ namespace MongoDB.Web.Providers
                 throw new ProviderException("The user was not found.");
             }
 
-            var update = Update.Set("ApplicationName", this.ApplicationName)
-                .Set("Comment", user.Comment)
-                .Set("Email", user.Email)
-                .Set("IsApproved", user.IsApproved)
-                .Set("LastActivityDate", user.LastActivityDate.ToUniversalTime())
-                .Set("LastLoginDate", user.LastLoginDate.ToUniversalTime());
+            user.LastActivityDate = user.LastActivityDate.ToUniversalTime();
+            user.LastActivityDate = user.LastLoginDate.ToUniversalTime();
 
-            this.mongoCollection.Update(query, update);
+            this.mongoCollection.Save(user);
         }
 
         public override bool ValidateUser(string username, string password)
