@@ -1,4 +1,11 @@
-
 *.suo
-/MongoDB.Web/obj
-/MongoDB.Web/bin
+# Visual Studio
+[Dd]ebug/
+[Rr]elease/
+*.sln.cache
+*.csproj.user
+
+# Resharper
+*[Rr]e[Ss]harper.user
+_ReSharper.*/
+

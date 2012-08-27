@@ -78,10 +78,16 @@ namespace MongoDB.Web.Providers
         }
 
 
-        private IMongoQuery QueryUsername(string username)
+        private IMongoQuery QueryUsernameIs(string username)
         {
             return Query.And(Query.EQ("ApplicationName", this.ApplicationName),
                              Query.EQ("UsernameLower", username.ToLowerInvariant()));
+        }
+
+        private IMongoQuery QueryUsernameMatches(string username)
+        {
+            return Query.And(Query.EQ("ApplicationName", this.ApplicationName),
+                             Query.Matches("UsernameLower", username.ToLowerInvariant()));
         }
 
         private IMongoQuery QueryEmail(string email)
@@ -92,7 +98,7 @@ namespace MongoDB.Web.Providers
 
         public override bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
 
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
@@ -117,7 +123,7 @@ namespace MongoDB.Web.Providers
 
         public override bool ChangePasswordQuestionAndAnswer(string username, string password, string newPasswordQuestion, string newPasswordAnswer)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
             if (!this.VerifyPassword(bsonDocument, password))
@@ -221,7 +227,7 @@ namespace MongoDB.Web.Providers
 
         public override bool DeleteUser(string username, bool deleteAllRelatedData)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             return this.mongoCollection.Remove(query).Ok;
         }
 
@@ -244,7 +250,7 @@ namespace MongoDB.Web.Providers
         {
             var membershipUsers = new MembershipUserCollection();
 
-            var query = QueryUsername(usernameToMatch);
+            var query = QueryUsernameMatches(usernameToMatch);
             totalRecords = (int)this.mongoCollection.FindAs<BsonDocument>(query).Count();
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
@@ -283,7 +289,7 @@ namespace MongoDB.Web.Providers
                 throw new NotSupportedException("This Membership Provider has not been configured to support password retrieval.");
             }
 
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
             if (this.RequiresQuestionAndAnswer && !this.VerifyPasswordAnswer(bsonDocument, answer))
@@ -296,7 +302,7 @@ namespace MongoDB.Web.Providers
 
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
             if (bsonDocument == null)
@@ -373,7 +379,7 @@ namespace MongoDB.Web.Providers
                 throw new NotSupportedException("This provider is not configured to allow password resets. To enable password reset, set enablePasswordReset to \"true\" in the configuration file.");
             }
 
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
             if (this.RequiresQuestionAndAnswer && !this.VerifyPasswordAnswer(bsonDocument, answer))
@@ -389,7 +395,7 @@ namespace MongoDB.Web.Providers
 
         public override bool UnlockUser(string username)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var update = Update.Set("FailedPasswordAttemptCount", 0).Set("FailedPasswordAttemptWindowStart", new DateTime(1970, 1, 1)).Set("FailedPasswordAnswerAttemptCount", 0).Set("FailedPasswordAnswerAttemptWindowStart", new DateTime(1970, 1, 1)).Set("IsLockedOut", false).Set("LastLockoutDate", new DateTime(1970, 1, 1));
             return this.mongoCollection.Update(query, update).Ok;
         }
@@ -417,7 +423,7 @@ namespace MongoDB.Web.Providers
 
         public override bool ValidateUser(string username, string password)
         {
-            var query = QueryUsername(username);
+            var query = QueryUsernameIs(username);
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
             if (bsonDocument == null || !bsonDocument["IsApproved"].AsBoolean || bsonDocument["IsLockedOut"].AsBoolean)
