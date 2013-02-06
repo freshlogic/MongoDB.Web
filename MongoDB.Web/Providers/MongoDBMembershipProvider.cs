@@ -8,6 +8,7 @@ using System.Web.Security;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Web.Internal;
 
 namespace MongoDB.Web.Providers
 {
@@ -18,12 +19,20 @@ namespace MongoDB.Web.Providers
         private int maxInvalidPasswordAttempts;
         private int minRequiredNonAlphanumericCharacters;
         private int minRequiredPasswordLength;
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
         private int passwordAttemptWindow;
         private MembershipPasswordFormat passwordFormat;
         private string passwordStrengthRegularExpression;
         private bool requiresQuestionAndAnswer;
         private bool requiresUniqueEmail;
+        private readonly IMongoConnectionProvider provider;
+
+        public MongoDBMembershipProvider() : this(new MongoConnectionProvider()) { }
+
+        public MongoDBMembershipProvider(IMongoConnectionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         public override string ApplicationName { get; set; }
 
@@ -341,8 +350,10 @@ namespace MongoDB.Web.Providers
             {
                 throw new ProviderException("Configured settings are invalid: Hashed passwords cannot be retrieved. Either set the password format to different type, or set enablePasswordRetrieval to false.");
             }
-
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Users");
+            this.mongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["collection"] ?? "Users");
             this.mongoCollection.EnsureIndex("ApplicationName");
             this.mongoCollection.EnsureIndex("ApplicationName", "Email");
             this.mongoCollection.EnsureIndex("ApplicationName", "Username");

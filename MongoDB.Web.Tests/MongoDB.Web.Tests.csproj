@@ -3,15 +3,17 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
+    <ProductVersion>
+    </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{90BB8808-E091-463D-AAFD-5134183BDCF7}</ProjectGuid>
+    <ProjectGuid>{76FA6C9A-B60E-47E0-B1E8-4C55AC306136}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MongoDB.Web</RootNamespace>
-    <AssemblyName>MongoDB.Web</AssemblyName>
+    <RootNamespace>MongoDB.Web.Tests</RootNamespace>
+    <AssemblyName>MongoDB.Web.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -31,34 +33,46 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Internal\IMongoConnectionProvider.cs" />
-    <Compile Include="Internal\MongoConnectionProvider.cs" />
-    <Compile Include="Providers\MongoDBOutputCacheProvider.cs" />
-    <Compile Include="Providers\WebEvent.cs" />
-    <Compile Include="Providers\MongoDBWebEventProvider.cs" />
-    <Compile Include="Providers\MongoDBProfileProvider.cs" />
-    <Compile Include="Providers\MongoDBMembershipProvider.cs" />
-    <Compile Include="Providers\MongoDBRoleProvider.cs" />
-    <Compile Include="Providers\MongoDBSessionStateProvider.cs" />
-  </ItemGroup>
-  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="MongoDB.Bson">
       <HintPath>..\packages\mongocsharpdriver.1.2\lib\net35\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
       <HintPath>..\packages\mongocsharpdriver.1.2\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.0.10827\lib\NET40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
-    <Reference Include="System.Data" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MongoDBMembershipProviderTests\GetUserXTests.cs" />
+    <Compile Include="MongoDBMembershipProviderTests\InitializationTests.cs" />
+    <Compile Include="MongoDBMembershipProviderTests\MembershipUtilities.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MongoDB.Web\MongoDB.Web.csproj">
+      <Project>{90BB8808-E091-463D-AAFD-5134183BDCF7}</Project>
+      <Name>MongoDB.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

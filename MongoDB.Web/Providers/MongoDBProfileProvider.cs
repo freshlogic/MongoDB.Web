@@ -8,12 +8,21 @@ using System.Web.Profile;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Web.Internal;
 
 namespace MongoDB.Web.Providers
 {
     public class MongoDBProfileProvider : ProfileProvider
     {
-        private MongoCollection mongoCollection;
+        private IMongoCollection mongoCollection;
+        private readonly IMongoConnectionProvider provider;
+
+        public MongoDBProfileProvider() : this(new MongoConnectionProvider()) { }
+
+        public MongoDBProfileProvider(IMongoConnectionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         public override string ApplicationName { get; set; }
 
@@ -110,7 +119,10 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Profiles");
+            this.mongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["collection"] ?? "Profiles");
             this.mongoCollection.EnsureIndex("ApplicationName");
             this.mongoCollection.EnsureIndex("ApplicationName", "IsAnonymous");
             this.mongoCollection.EnsureIndex("ApplicationName", "IsAnonymous", "LastActivityDate");

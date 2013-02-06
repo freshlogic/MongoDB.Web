@@ -7,13 +7,22 @@ using System.Web.Security;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Builders;
+using MongoDB.Web.Internal;
 
 namespace MongoDB.Web.Providers
 {
     public class MongoDBRoleProvider : RoleProvider
     {
-        private MongoCollection rolesMongoCollection;
-        private MongoCollection usersInRolesMongoCollection;
+        private IMongoCollection rolesMongoCollection;
+        private IMongoCollection usersInRolesMongoCollection;
+        private readonly IMongoConnectionProvider provider;
+
+        public MongoDBRoleProvider() : this(new MongoConnectionProvider()) { }
+
+        public MongoDBRoleProvider(IMongoConnectionProvider provider)
+        {
+            this.provider = provider;
+        }
 
         public override string ApplicationName { get; set; }
 
@@ -127,9 +136,15 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
 
-            var mongoDatabase = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB");
-            this.rolesMongoCollection = mongoDatabase.GetCollection(config["collection"] ?? "Roles");
-            this.usersInRolesMongoCollection = mongoDatabase.GetCollection("UsersInRoles");
+            this.rolesMongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["collection"] ?? "Roles");
+
+            this.usersInRolesMongoCollection = provider.GetCollection(
+                connectionString: config["connectionString"] ?? "mongodb://localhost",
+                database: config["database"] ?? "ASPNETDB",
+                collection: config["usersInRolesCollection"] ?? "UsersInRoles");
 
             this.rolesMongoCollection.EnsureIndex("ApplicationName");
             this.rolesMongoCollection.EnsureIndex("ApplicationName", "Role");
