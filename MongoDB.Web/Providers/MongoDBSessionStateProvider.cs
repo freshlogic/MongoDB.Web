@@ -36,12 +36,12 @@ namespace MongoDB.Web.Providers
 
         public override SessionStateStoreData GetItem(HttpContext context, string id, out bool locked, out TimeSpan lockAge, out object lockId, out SessionStateActions actions)
         {
-            return GetSessionStateStoreData(false, context, id, out locked, out lockAge, out lockId, out actions);
+            return this.GetSessionStateStoreData(false, context, id, out locked, out lockAge, out lockId, out actions);
         }
 
         public override SessionStateStoreData GetItemExclusive(HttpContext context, string id, out bool locked, out TimeSpan lockAge, out object lockId, out SessionStateActions actions)
         {
-            return GetSessionStateStoreData(true, context, id, out locked, out lockAge, out lockId, out actions);
+            return this.GetSessionStateStoreData(true, context, id, out locked, out lockAge, out lockId, out actions);
         }
 
         public override void Initialize(string name, NameValueCollection config)
@@ -63,7 +63,7 @@ namespace MongoDB.Web.Providers
         public override void ReleaseItemExclusive(HttpContext context, string id, object lockId)
         {
             var query = Query.And(Query.EQ("applicationVirtualPath", HostingEnvironment.ApplicationVirtualPath), Query.EQ("id", id), Query.EQ("lockId", lockId.ToString()));
-            var update = Update.Set("expires", DateTime.Now.Add(sessionStateSection.Timeout)).Set("locked", false);
+            var update = Update.Set("expires", DateTime.Now.Add(this.sessionStateSection.Timeout)).Set("locked", false);
             this.mongoCollection.Update(query, update);
         }
 
@@ -76,7 +76,7 @@ namespace MongoDB.Web.Providers
         public override void ResetItemTimeout(HttpContext context, string id)
         {
             var query = Query.And(Query.EQ("applicationVirtualPath", HostingEnvironment.ApplicationVirtualPath), Query.EQ("id", id));
-            var update = Update.Set("expires", DateTime.Now.Add(sessionStateSection.Timeout));
+            var update = Update.Set("expires", DateTime.Now.Add(this.sessionStateSection.Timeout));
             this.mongoCollection.Update(query, update);
         }
 
@@ -169,7 +169,7 @@ namespace MongoDB.Web.Providers
 
             if (actions == SessionStateActions.InitializeItem)
             {
-                return CreateNewStoreData(context, sessionStateSection.Timeout.Minutes);
+                return this.CreateNewStoreData(context, this.sessionStateSection.Timeout.Minutes);
             }
 
             using (var memoryStream = new MemoryStream(bsonDocument["sessionStateItems"].AsByteArray))

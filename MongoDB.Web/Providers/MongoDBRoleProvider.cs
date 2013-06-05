@@ -24,7 +24,7 @@ namespace MongoDB.Web.Providers
             {
                 if (!this.RoleExists(roleName))
                 {
-                    throw new ProviderException(String.Format("The role '{0}' was not found.", roleName));
+                    throw new ProviderException(string.Format("The role '{0}' was not found.", roleName));
                 }
             }
             
@@ -34,14 +34,14 @@ namespace MongoDB.Web.Providers
 
                 if (membershipUser == null)
                 {
-                    throw new ProviderException(String.Format("The user '{0}' was not found.", username));
+                    throw new ProviderException(string.Format("The user '{0}' was not found.", username));
                 }
                 
                 foreach (var roleName in roleNames)
                 {
                     if (this.IsUserInRole(username, roleName))
                     {
-                        throw new ProviderException(String.Format("The user '{0}' is already in role '{1}'.", username, roleName));
+                        throw new ProviderException(string.Format("The user '{0}' is already in role '{1}'.", username, roleName));
                     }
 
                     var bsonDocument = new BsonDocument
@@ -62,7 +62,7 @@ namespace MongoDB.Web.Providers
             
             if (this.rolesMongoCollection.FindAs<BsonDocument>(query).Count() > 0)
             {
-                throw new ProviderException(String.Format("The role '{0}' already exists.", roleName));
+                throw new ProviderException(string.Format("The role '{0}' already exists.", roleName));
             }
 
             var bsonDocument = new BsonDocument
@@ -76,9 +76,9 @@ namespace MongoDB.Web.Providers
 
         public override bool DeleteRole(string roleName, bool throwOnPopulatedRole)
         {
-            if (!RoleExists(roleName))
+            if (!this.RoleExists(roleName))
             {
-                throw new ProviderException(String.Format("The role '{0}' was not found.", roleName));
+                throw new ProviderException(string.Format("The role '{0}' was not found.", roleName));
             }
             
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.EQ("Role", roleName));
@@ -96,9 +96,9 @@ namespace MongoDB.Web.Providers
 
         public override string[] FindUsersInRole(string roleName, string usernameToMatch)
         {
-            if (!RoleExists(roleName))
+            if (!this.RoleExists(roleName))
             {
-                throw new ProviderException(String.Format("The role '{0}' was not found.", roleName));
+                throw new ProviderException(string.Format("The role '{0}' was not found.", roleName));
             }
 
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.EQ("Role", roleName));

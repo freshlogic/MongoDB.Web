@@ -88,14 +88,14 @@ namespace MongoDB.Web.Providers
             }
 
             var validatePasswordEventArgs = new ValidatePasswordEventArgs(username, newPassword, false);
-            OnValidatingPassword(validatePasswordEventArgs);
+            this.OnValidatingPassword(validatePasswordEventArgs);
 
             if (validatePasswordEventArgs.Cancel)
             {
                 throw new MembershipPasswordException(validatePasswordEventArgs.FailureInformation.Message);
             }
 
-            var update = Update.Set("LastPasswordChangedDate", DateTime.UtcNow).Set("Password", EncodePassword(newPassword, this.PasswordFormat, bsonDocument["Salt"].AsString));
+            var update = Update.Set("LastPasswordChangedDate", DateTime.UtcNow).Set("Password", this.EncodePassword(newPassword, this.PasswordFormat, bsonDocument["Salt"].AsString));
             this.mongoCollection.Update(query, update);
 
             return true;
@@ -131,7 +131,7 @@ namespace MongoDB.Web.Providers
             }
 
             var validatePasswordEventArgs = new ValidatePasswordEventArgs(username, password, true);
-            OnValidatingPassword(validatePasswordEventArgs);
+            this.OnValidatingPassword(validatePasswordEventArgs);
 
             if (validatePasswordEventArgs.Cancel)
             {
@@ -139,13 +139,13 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if (this.RequiresQuestionAndAnswer && !String.IsNullOrWhiteSpace(passwordQuestion))
+            if (this.RequiresQuestionAndAnswer && !string.IsNullOrWhiteSpace(passwordQuestion))
             {
                 status = MembershipCreateStatus.InvalidQuestion;
                 return null;
             }
 
-            if (this.RequiresQuestionAndAnswer && !String.IsNullOrWhiteSpace(passwordAnswer))
+            if (this.RequiresQuestionAndAnswer && !string.IsNullOrWhiteSpace(passwordAnswer))
             {
                 status = MembershipCreateStatus.InvalidAnswer;
                 return null;
@@ -157,13 +157,13 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if(this.GetUser(providerUserKey, false) != null)
+            if (this.GetUser(providerUserKey, false) != null)
             {
                 status = MembershipCreateStatus.DuplicateProviderUserKey;
                 return null;
             }
 
-            if (this.RequiresUniqueEmail && !String.IsNullOrWhiteSpace(this.GetUserNameByEmail(email)))
+            if (this.RequiresUniqueEmail && !string.IsNullOrWhiteSpace(this.GetUserNameByEmail(email)))
             {
                 status = MembershipCreateStatus.DuplicateEmail;
                 return null;
@@ -218,7 +218,7 @@ namespace MongoDB.Web.Providers
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
-                membershipUsers.Add(ToMembershipUser(bsonDocument));
+                membershipUsers.Add(this.ToMembershipUser(bsonDocument));
             }
 
             return membershipUsers;
@@ -233,7 +233,7 @@ namespace MongoDB.Web.Providers
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
-                membershipUsers.Add(ToMembershipUser(bsonDocument));
+                membershipUsers.Add(this.ToMembershipUser(bsonDocument));
             }
 
             return membershipUsers;
@@ -248,7 +248,7 @@ namespace MongoDB.Web.Providers
 
             foreach (var bsonDocument in this.mongoCollection.FindAs<BsonDocument>(query).SetSkip(pageIndex * pageSize).SetLimit(pageSize))
             {
-                membershipUsers.Add(ToMembershipUser(bsonDocument));
+                membershipUsers.Add(this.ToMembershipUser(bsonDocument));
             }
 
             return membershipUsers;
@@ -270,7 +270,7 @@ namespace MongoDB.Web.Providers
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.EQ("Username", username));
             var bsonDocument = this.mongoCollection.FindOneAs<BsonDocument>(query);
 
-            if(this.RequiresQuestionAndAnswer && !this.VerifyPasswordAnswer(bsonDocument, answer))
+            if (this.RequiresQuestionAndAnswer && !this.VerifyPasswordAnswer(bsonDocument, answer))
             {
                 throw new MembershipPasswordException("The password-answer supplied is invalid.");
             }
@@ -294,7 +294,7 @@ namespace MongoDB.Web.Providers
                 this.mongoCollection.Update(query, update);
             }
 
-            return ToMembershipUser(bsonDocument);
+            return this.ToMembershipUser(bsonDocument);
         }
 
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
@@ -313,7 +313,7 @@ namespace MongoDB.Web.Providers
                 this.mongoCollection.Update(query, update);
             }
 
-            return ToMembershipUser(bsonDocument);
+            return this.ToMembershipUser(bsonDocument);
         }
 
         public override string GetUserNameByEmail(string email)
@@ -326,16 +326,16 @@ namespace MongoDB.Web.Providers
         public override void Initialize(string name, NameValueCollection config)
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
-            this.enablePasswordReset = Boolean.Parse(config["enablePasswordReset"] ?? "true");
-            this.enablePasswordRetrieval = Boolean.Parse(config["enablePasswordRetrieval"] ?? "false");
-            this.maxInvalidPasswordAttempts = Int32.Parse(config["maxInvalidPasswordAttempts"] ?? "5");
-            this.minRequiredNonAlphanumericCharacters = Int32.Parse(config["minRequiredNonAlphanumericCharacters"] ?? "1");
-            this.minRequiredPasswordLength = Int32.Parse(config["minRequiredPasswordLength"] ?? "7");
-            this.passwordAttemptWindow = Int32.Parse(config["passwordAttemptWindow"] ?? "10");
+            this.enablePasswordReset = bool.Parse(config["enablePasswordReset"] ?? "true");
+            this.enablePasswordRetrieval = bool.Parse(config["enablePasswordRetrieval"] ?? "false");
+            this.maxInvalidPasswordAttempts = int.Parse(config["maxInvalidPasswordAttempts"] ?? "5");
+            this.minRequiredNonAlphanumericCharacters = int.Parse(config["minRequiredNonAlphanumericCharacters"] ?? "1");
+            this.minRequiredPasswordLength = int.Parse(config["minRequiredPasswordLength"] ?? "7");
+            this.passwordAttemptWindow = int.Parse(config["passwordAttemptWindow"] ?? "10");
             this.passwordFormat = (MembershipPasswordFormat)Enum.Parse(typeof(MembershipPasswordFormat), config["passwordFormat"] ?? "Hashed");
-            this.passwordStrengthRegularExpression = config["passwordStrengthRegularExpression"] ?? String.Empty;
-            this.requiresQuestionAndAnswer = Boolean.Parse(config["requiresQuestionAndAnswer"] ?? "false");
-            this.requiresUniqueEmail = Boolean.Parse(config["requiresUniqueEmail"] ?? "true");
+            this.passwordStrengthRegularExpression = config["passwordStrengthRegularExpression"] ?? string.Empty;
+            this.requiresQuestionAndAnswer = bool.Parse(config["requiresQuestionAndAnswer"] ?? "false");
+            this.requiresUniqueEmail = bool.Parse(config["requiresUniqueEmail"] ?? "true");
 
             if (this.PasswordFormat == MembershipPasswordFormat.Hashed && this.EnablePasswordRetrieval)
             {
@@ -423,7 +423,7 @@ namespace MongoDB.Web.Providers
 
         private string DecodePassword(string password, MembershipPasswordFormat membershipPasswordFormat)
         {
-            switch (passwordFormat)
+            switch (this.passwordFormat)
             {
                 case MembershipPasswordFormat.Clear:
                     return password;
@@ -462,7 +462,7 @@ namespace MongoDB.Web.Providers
                 return Convert.ToBase64String(HashAlgorithm.Create("SHA1").ComputeHash(allBytes));
             }
 
-            return Convert.ToBase64String(EncryptPassword(allBytes));
+            return Convert.ToBase64String(this.EncryptPassword(allBytes));
         }
 
         private MembershipUser ToMembershipUser(BsonDocument bsonDocument)
@@ -481,12 +481,12 @@ namespace MongoDB.Web.Providers
 
         private bool VerifyPassword(BsonDocument user, string password)
         {
-            return user["Password"].AsString == EncodePassword(password, this.PasswordFormat, user["Salt"].AsString);
+            return user["Password"].AsString == this.EncodePassword(password, this.PasswordFormat, user["Salt"].AsString);
         }
 
         private bool VerifyPasswordAnswer(BsonDocument user, string passwordAnswer)
         {
-            return user["PasswordAnswer"].AsString == EncodePassword(passwordAnswer, this.PasswordFormat, user["Salt"].AsString);
+            return user["PasswordAnswer"].AsString == this.EncodePassword(passwordAnswer, this.PasswordFormat, user["Salt"].AsString);
         }
 
         #endregion

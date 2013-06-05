@@ -32,7 +32,7 @@ namespace MongoDB.Web.Providers
         public override int DeleteProfiles(string[] usernames)
         {
             var query = Query.And(Query.EQ("ApplicationName", this.ApplicationName), Query.In("Username", new BsonArray(usernames)));
-            return ( int )this.mongoCollection.Remove( query ).DocumentsAffected;
+            return (int)this.mongoCollection.Remove(query).DocumentsAffected;
         }
 
         public override int DeleteProfiles(ProfileInfoCollection profiles)
@@ -42,28 +42,28 @@ namespace MongoDB.Web.Providers
 
         public override ProfileInfoCollection FindInactiveProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
         {
-            return GetProfiles(authenticationOption, usernameToMatch, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
+            return this.GetProfiles(authenticationOption, usernameToMatch, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
         }
 
         public override ProfileInfoCollection FindProfilesByUserName(ProfileAuthenticationOption authenticationOption, string usernameToMatch, int pageIndex, int pageSize, out int totalRecords)
         {
-            return GetProfiles(authenticationOption, usernameToMatch, null, pageIndex, pageSize, out totalRecords);
+            return this.GetProfiles(authenticationOption, usernameToMatch, null, pageIndex, pageSize, out totalRecords);
         }
 
         public override ProfileInfoCollection GetAllInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
         {
-            return GetProfiles(authenticationOption, null, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
+            return this.GetProfiles(authenticationOption, null, userInactiveSinceDate, pageIndex, pageSize, out totalRecords);
         }
 
         public override ProfileInfoCollection GetAllProfiles(ProfileAuthenticationOption authenticationOption, int pageIndex, int pageSize, out int totalRecords)
         {
-            return GetProfiles(authenticationOption, null, null, pageIndex, pageSize, out totalRecords);
+            return this.GetProfiles(authenticationOption, null, null, pageIndex, pageSize, out totalRecords);
         }
 
         public override int GetNumberOfInactiveProfiles(ProfileAuthenticationOption authenticationOption, DateTime userInactiveSinceDate)
         {
-            var query = GetQuery(authenticationOption, null, userInactiveSinceDate);
-            return ( int )this.mongoCollection.Count( query );
+            var query = this.GetQuery(authenticationOption, null, userInactiveSinceDate);
+            return (int)this.mongoCollection.Count(query);
         }
 
         public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
@@ -77,7 +77,7 @@ namespace MongoDB.Web.Providers
 
             var username = (string)context["UserName"];
 
-            if(String.IsNullOrWhiteSpace(username))
+            if (string.IsNullOrWhiteSpace(username))
             {
                 return settingsPropertyValueCollection;
             }
@@ -128,7 +128,7 @@ namespace MongoDB.Web.Providers
             var username = (string)context["UserName"];
             var isAuthenticated = (bool)context["IsAuthenticated"];
 
-            if (String.IsNullOrWhiteSpace(username) || collection.Count < 1)
+            if (string.IsNullOrWhiteSpace(username) || collection.Count < 1)
             {
                 return;
             }
@@ -176,11 +176,16 @@ namespace MongoDB.Web.Providers
 
         #region Private Methods
 
+        private static ProfileInfo ToProfileInfo(BsonDocument bsonDocument)
+        {
+            return new ProfileInfo(bsonDocument["Username"].AsString, bsonDocument["IsAnonymous"].AsBoolean, bsonDocument["LastActivityDate"].ToUniversalTime(), bsonDocument["LastUpdatedDate"].ToUniversalTime(), 0);
+        }
+
         private ProfileInfoCollection GetProfiles(ProfileAuthenticationOption authenticationOption, string usernameToMatch, DateTime? userInactiveSinceDate, int pageIndex, int pageSize, out int totalRecords)
         {
-            var query = GetQuery(authenticationOption, usernameToMatch, userInactiveSinceDate);
+            var query = this.GetQuery(authenticationOption, usernameToMatch, userInactiveSinceDate);
 
-            totalRecords = ( int )this.mongoCollection.Count( query );
+            totalRecords = (int)this.mongoCollection.Count(query);
 
             var profileInfoCollection = new ProfileInfoCollection();
 
@@ -201,22 +206,17 @@ namespace MongoDB.Web.Providers
                 query = Query.And(query, Query.EQ("IsAnonymous", authenticationOption == ProfileAuthenticationOption.Anonymous));
             }
 
-            if(!String.IsNullOrWhiteSpace(usernameToMatch))
+            if (!string.IsNullOrWhiteSpace(usernameToMatch))
             {
                 query = Query.And(query, Query.Matches("Username", usernameToMatch));
             }
 
-            if(userInactiveSinceDate.HasValue)
+            if (userInactiveSinceDate.HasValue)
             {
                 query = Query.And(query, Query.LTE("LastActivityDate", userInactiveSinceDate));
             }
 
             return query;
-        }
-
-        private static ProfileInfo ToProfileInfo(BsonDocument bsonDocument)
-        {
-            return new ProfileInfo(bsonDocument["Username"].AsString, bsonDocument["IsAnonymous"].AsBoolean, bsonDocument["LastActivityDate"].ToUniversalTime(), bsonDocument["LastUpdatedDate"].ToUniversalTime(), 0);
         }
 
         #endregion
