@@ -90,7 +90,7 @@ namespace MongoDB.Web.Providers
                 var settingsPropertyValue = new SettingsPropertyValue(settingsProperty);
                 settingsPropertyValueCollection.Add(settingsPropertyValue);
 
-                var value = bsonDocument[settingsPropertyValue.Name].RawValue;
+                var value = BsonTypeMapper.MapToDotNetValue(bsonDocument[settingsPropertyValue.Name]);
 
                 if (value != null)
                 {
