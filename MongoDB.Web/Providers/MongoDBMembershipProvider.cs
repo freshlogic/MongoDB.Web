@@ -367,6 +367,7 @@ namespace MongoDB.Web.Providers
 
             var password = Membership.GeneratePassword(this.MinRequiredPasswordLength, this.MinRequiredNonAlphanumericCharacters);
             var update = Update.Set("LastPasswordChangedDate", DateTime.UtcNow).Set("Password", this.EncodePassword(password, this.PasswordFormat, bsonDocument["Salt"].AsString));
+            this.mongoCollection.Update(query, update);
 
             return password;
         }
