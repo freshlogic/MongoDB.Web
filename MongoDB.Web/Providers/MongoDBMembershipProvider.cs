@@ -342,7 +342,7 @@ namespace MongoDB.Web.Providers
                 throw new ProviderException("Configured settings are invalid: Hashed passwords cannot be retrieved. Either set the password format to different type, or set enablePasswordRetrieval to false.");
             }
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Users");
+            this.mongoCollection = new MongoClient(config["connectionString"] ?? "mongodb://localhost").GetServer().GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Users");
             this.mongoCollection.EnsureIndex("ApplicationName");
             this.mongoCollection.EnsureIndex("ApplicationName", "Email");
             this.mongoCollection.EnsureIndex("ApplicationName", "Username");
@@ -476,7 +476,7 @@ namespace MongoDB.Web.Providers
             var email = bsonDocument.Contains("Email") ? bsonDocument["Email"].AsString : null;
             var passwordQuestion = bsonDocument.Contains("PasswordQuestion") ? bsonDocument["PasswordQuestion"].AsString : null;
 
-            return new MembershipUser(this.Name, bsonDocument["Username"].AsString, bsonDocument["_id"].AsGuid, email, passwordQuestion, comment, bsonDocument["IsApproved"].AsBoolean, bsonDocument["IsLockedOut"].AsBoolean, bsonDocument["CreationDate"].AsDateTime, bsonDocument["LastLoginDate"].AsDateTime, bsonDocument["LastActivityDate"].AsDateTime, bsonDocument["LastPasswordChangedDate"].AsDateTime, bsonDocument["LastLockoutDate"].AsDateTime);
+            return new MembershipUser(this.Name, bsonDocument["Username"].AsString, bsonDocument["_id"].AsGuid, email, passwordQuestion, comment, bsonDocument["IsApproved"].AsBoolean, bsonDocument["IsLockedOut"].AsBoolean, bsonDocument["CreationDate"].ToUniversalTime(), bsonDocument["LastLoginDate"].ToUniversalTime(), bsonDocument["LastActivityDate"].ToUniversalTime(), bsonDocument["LastPasswordChangedDate"].ToUniversalTime(), bsonDocument["LastLockoutDate"].ToUniversalTime());
         }
 
         private bool VerifyPassword(BsonDocument user, string password)

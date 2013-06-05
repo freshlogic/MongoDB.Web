@@ -27,7 +27,7 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if (bsonDocument["Expiration"].AsDateTime <= DateTime.UtcNow)
+            if (bsonDocument["Expiration"].ToUniversalTime() <= DateTime.UtcNow)
             {
                 this.Remove(key);
                 return null;
@@ -41,7 +41,7 @@ namespace MongoDB.Web.Providers
 
         public override void Initialize(string name, NameValueCollection config)
         {
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "OutputCache");
+            this.mongoCollection = new MongoClient(config["connectionString"] ?? "mongodb://localhost").GetServer().GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "OutputCache");
             this.mongoCollection.EnsureIndex("Key");
             base.Initialize(name, config);
         }

@@ -49,7 +49,7 @@ namespace MongoDB.Web.Providers
             var configuration = WebConfigurationManager.OpenWebConfiguration(HostingEnvironment.ApplicationVirtualPath);
             this.sessionStateSection = configuration.GetSection("system.web/sessionState") as SessionStateSection;
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "SessionState");
+            this.mongoCollection = new MongoClient(config["connectionString"] ?? "mongodb://localhost").GetServer().GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "SessionState");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id");
             this.mongoCollection.EnsureIndex("applicationVirtualPath", "id", "lockId");
 
@@ -141,14 +141,14 @@ namespace MongoDB.Web.Providers
             {
                 locked = false;
             }
-            else if (bsonDocument["expires"].AsDateTime <= DateTime.Now)
+            else if (bsonDocument["expires"].ToUniversalTime() <= DateTime.Now)
             {
                 locked = false;
                 this.mongoCollection.Remove(Query.And(Query.EQ("applicationVirtualPath", HostingEnvironment.ApplicationVirtualPath), Query.EQ("id", id)));
             }
             else if (bsonDocument["locked"].AsBoolean == true)
             {
-                lockAge = DateTime.Now.Subtract(bsonDocument["lockDate"].AsDateTime);
+                lockAge = DateTime.Now.Subtract(bsonDocument["lockDate"].ToUniversalTime());
                 locked = true;
                 lockId = bsonDocument["lockId"].AsInt32;
             }

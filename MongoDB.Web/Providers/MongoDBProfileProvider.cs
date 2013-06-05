@@ -110,7 +110,7 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
 
-            this.mongoCollection = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Profiles");
+            this.mongoCollection = new MongoClient(config["connectionString"] ?? "mongodb://localhost").GetServer().GetDatabase(config["database"] ?? "ASPNETDB").GetCollection(config["collection"] ?? "Profiles");
             this.mongoCollection.EnsureIndex("ApplicationName");
             this.mongoCollection.EnsureIndex("ApplicationName", "IsAnonymous");
             this.mongoCollection.EnsureIndex("ApplicationName", "IsAnonymous", "LastActivityDate");
@@ -168,7 +168,7 @@ namespace MongoDB.Web.Providers
                 { "LastUpdatedDate", DateTime.Now }
             };
 
-            mergeDocument.Add(values as IDictionary<string, object>);
+            mergeDocument.AddRange(values as IDictionary<string, object>);
             bsonDocument.Merge(mergeDocument);
 
             this.mongoCollection.Save(bsonDocument);
@@ -216,7 +216,7 @@ namespace MongoDB.Web.Providers
 
         private static ProfileInfo ToProfileInfo(BsonDocument bsonDocument)
         {
-            return new ProfileInfo(bsonDocument["Username"].AsString, bsonDocument["IsAnonymous"].AsBoolean, bsonDocument["LastActivityDate"].AsDateTime, bsonDocument["LastUpdatedDate"].AsDateTime, 0);
+            return new ProfileInfo(bsonDocument["Username"].AsString, bsonDocument["IsAnonymous"].AsBoolean, bsonDocument["LastActivityDate"].ToUniversalTime(), bsonDocument["LastUpdatedDate"].ToUniversalTime(), 0);
         }
 
         #endregion

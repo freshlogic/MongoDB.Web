@@ -127,7 +127,7 @@ namespace MongoDB.Web.Providers
         {
             this.ApplicationName = config["applicationName"] ?? HostingEnvironment.ApplicationVirtualPath;
 
-            var mongoDatabase = MongoServer.Create(config["connectionString"] ?? "mongodb://localhost").GetDatabase(config["database"] ?? "ASPNETDB");
+            var mongoDatabase = new MongoClient(config["connectionString"] ?? "mongodb://localhost").GetServer().GetDatabase(config["database"] ?? "ASPNETDB");
             this.rolesMongoCollection = mongoDatabase.GetCollection(config["collection"] ?? "Roles");
             this.usersInRolesMongoCollection = mongoDatabase.GetCollection("UsersInRoles");
 
