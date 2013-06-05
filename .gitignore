@@ -1,4 +1,3 @@
-
 *.suo
-/MongoDB.Web/obj
-/MongoDB.Web/bin
+[Bb]in/
+[Oo]bj/
