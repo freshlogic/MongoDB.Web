@@ -139,13 +139,13 @@ namespace MongoDB.Web.Providers
                 return null;
             }
 
-            if (this.RequiresQuestionAndAnswer && !string.IsNullOrWhiteSpace(passwordQuestion))
+            if (this.RequiresQuestionAndAnswer && string.IsNullOrWhiteSpace(passwordQuestion))
             {
                 status = MembershipCreateStatus.InvalidQuestion;
                 return null;
             }
 
-            if (this.RequiresQuestionAndAnswer && !string.IsNullOrWhiteSpace(passwordAnswer))
+            if (this.RequiresQuestionAndAnswer && string.IsNullOrWhiteSpace(passwordAnswer))
             {
                 status = MembershipCreateStatus.InvalidAnswer;
                 return null;
