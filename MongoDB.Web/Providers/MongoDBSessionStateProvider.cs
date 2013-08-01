@@ -138,7 +138,9 @@ namespace MongoDB.Web.Providers
 
             if (bsonDocument == null)
             {
+                actions = SessionStateActions.InitializeItem;
                 locked = false;
+                lockId = 0;
             }
             else if (bsonDocument["expires"].ToUniversalTime() <= DateTime.Now)
             {
@@ -158,18 +160,18 @@ namespace MongoDB.Web.Providers
                 actions = (SessionStateActions)bsonDocument["sessionStateActions"].AsInt32;
             }
 
+            if (actions == SessionStateActions.InitializeItem)
+            {
+                return this.CreateNewStoreData(context, this.sessionStateSection.Timeout.Minutes);
+            }
+
             if (exclusive)
             {
-                lockId = lockId != null ? (int)lockId + 1 : 0;
+                lockId = (int)lockId + 1;
                 actions = SessionStateActions.None;
 
                 var update = Update.Set("lockDate", DateTime.Now).Set("lockId", (int)lockId).Set("locked", true).Set("sessionStateActions", SessionStateActions.None);
                 this.mongoCollection.Update(query, update);
-            }
-
-            if (actions == SessionStateActions.InitializeItem)
-            {
-                return this.CreateNewStoreData(context, this.sessionStateSection.Timeout.Minutes);
             }
 
             using (var memoryStream = new MemoryStream(bsonDocument["sessionStateItems"].AsByteArray))
