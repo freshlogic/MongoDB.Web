@@ -160,7 +160,7 @@ namespace MongoDB.Web.Providers
 
             if (exclusive)
             {
-                lockId = (int)lockId + 1;
+                lockId = lockId != null ? (int)lockId + 1 : 0;
                 actions = SessionStateActions.None;
 
                 var update = Update.Set("lockDate", DateTime.Now).Set("lockId", (int)lockId).Set("locked", true).Set("sessionStateActions", SessionStateActions.None);
